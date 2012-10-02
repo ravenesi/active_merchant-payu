@@ -88,20 +88,20 @@ module ActiveMerchant
         payment_id = params[:session_id]
         sig = Digest::MD5.hexdigest("#{pos_id}#{payment_id}#{ts}#{key}")
         uri = URI.parse("#{BASE_PAYU_URL}UTF/Payment/get/xml")
-        puts "https://#{uri.host}:#{uri.port}"
+        #puts "https://#{uri.host}:#{uri.port}"
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        puts "https://#{uri.host}:#{uri.port}/#{uri.request_uri}"
+        #puts "https://#{uri.host}:#{uri.port}/#{uri.request_uri}"
         request = Net::HTTP::Post.new(uri.request_uri)
-        puts "data:"
+        #puts "data:"
         params_ssl = {'session_id' => payment_id, 'ts' => ts, 'pos_id' => pos_id, 'sig' => sig}
-        puts params_ssl.inspect
+        #puts params_ssl.inspect
         request.set_form_data(params_ssl)        
         raw_response = http.request(request)
-        puts "response:"
-        puts raw_response.inspect
-        puts raw_response.body.inspect        
+        #puts "response:"
+        #puts raw_response.inspect
+        #puts raw_response.body.inspect        
         response = REXML::Document.new(raw_response.body)
         if !response.blank? and response.root.elements['status'].text == "OK"
           trans = response.root.elements['trans']
