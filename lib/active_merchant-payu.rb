@@ -53,7 +53,7 @@ module ActiveMerchant
       end
 
 
-      def generate_link(amount, params_array=[], firstname = "", lastname = "", email = "", ip = "", chanel = nil, desc = nil, order_id = nil)
+      def generate_link(amount, params_array=[], firstname = "", lastname = "", email = "", ip = "", chanel = nil, desc = nil, order_id = nil, language = nil)
         params_to_s = params_array.join('-')
         link = "#{BASE_PAYU_URL}UTF/NewPayment?"
         {
@@ -67,6 +67,7 @@ module ActiveMerchant
           :client_ip => ip,          
           :js => 1,
           :order_id => order_id,
+          :language => language || :cs,
           :desc => desc || @options[:default_desc]
         }.each do |k,v|
           link << "#{k}=#{v}&"
@@ -106,7 +107,7 @@ module ActiveMerchant
         if !response.blank? and response.root.elements['status'].text == "OK"
           trans = response.root.elements['trans']
           amount = trans.elements['amount'].text.to_f/100
-          case trans.elements['status'].text
+          case trans.elements['status'].text  
           when "1"
             return ["created", amount]
           when "2"
