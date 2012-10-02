@@ -95,8 +95,9 @@ module ActiveMerchant
         puts "https://#{uri.host}:#{uri.post}/#{uri.request_uri}"
         request = Net::HTTP::Post.new(uri.request_uri)
         puts "data:"
-        puts {'session_id' => payment_id, 'ts' => ts, 'pos_id' => pos_id, 'sig' => sig}.inspect
-        request.set_form_data({'session_id' => payment_id, 'ts' => ts, 'pos_id' => pos_id, 'sig' => sig})        
+        params_ssl = {'session_id' => payment_id, 'ts' => ts, 'pos_id' => pos_id, 'sig' => sig}
+        puts params_ssl.inspect
+        request.set_form_data(params_ssl)        
         raw_response = http.request(request)
         puts "response:"
         puts raw_response.inspect
