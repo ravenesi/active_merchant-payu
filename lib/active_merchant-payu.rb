@@ -88,11 +88,11 @@ module ActiveMerchant
         payment_id = params[:session_id]
         sig = Digest::MD5.hexdigest("#{pos_id}#{payment_id}#{ts}#{key}")
         uri = URI.parse("#{BASE_PAYU_URL}UTF/Payment/get/xml")
-        puts "https://#{uri.host}:#{uri.post}"
+        puts "https://#{uri.host}:#{uri.port}"
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        puts "https://#{uri.host}:#{uri.post}/#{uri.request_uri}"
+        puts "https://#{uri.host}:#{uri.port}/#{uri.request_uri}"
         request = Net::HTTP::Post.new(uri.request_uri)
         puts "data:"
         params_ssl = {'session_id' => payment_id, 'ts' => ts, 'pos_id' => pos_id, 'sig' => sig}
