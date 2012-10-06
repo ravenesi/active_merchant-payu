@@ -68,7 +68,7 @@ module ActiveMerchant
           :js => 1,
           :street => street,
           :city => city,
-          :postal_code => postal_code,
+          :post_code => postal_code,
           :order_id => order_id,
           :language => language || :cs,
           :desc => desc || @options[:default_desc]
