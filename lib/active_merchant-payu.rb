@@ -53,7 +53,7 @@ module ActiveMerchant
       end
 
 
-      def generate_link(amount, params_array=[], firstname = "", lastname = "", email = "", ip = "", chanel = nil, desc = nil, order_id = nil, language = nil)
+      def generate_link(amount, params_array=[], firstname = "", lastname = "", email = "", ip = "", chanel = nil, desc = nil, order_id = nil, language = nil, street = nil, city = nil, postal_code = nil)
         params_to_s = params_array.join('-')
         link = "#{BASE_PAYU_URL}UTF/NewPayment?"
         {
@@ -62,10 +62,13 @@ module ActiveMerchant
           :email => email,
           :pos_id => @options[:pos_id],
           :pos_auth_key => @options[:pos_auth_key],
-          :amount => amount*100,
+          :amount => (amount*100).to_i,
           :session_id => params_to_s + "-" + Digest::MD5.hexdigest(params_to_s + @options[:key1]).to_s,
           :client_ip => ip,          
           :js => 1,
+          :street => street,
+          :city => city,
+          :postal_code => postal_code,
           :order_id => order_id,
           :language => language || :cs,
           :desc => desc || @options[:default_desc]
@@ -108,18 +111,21 @@ module ActiveMerchant
           trans = response.root.elements['trans']
           amount = trans.elements['amount'].text.to_f/100
           case trans.elements['status'].text  
+                    
           when "1"
-            return ["created", amount]
+            return ["new", amount]
           when "2"
-            return ["canceled", amount]
+            return ["cancelled", amount]
           when "3"
-            return ["denied", amount]
+            return ["rejected", amount]
           when "4"
-            return ["created", amount]
+            return ["started", amount]
+          when "5"
+            return ["awaiting_collection", amount]
           when "7"
-            return ["denied", amount]
+            return ["reject_done", amount]
           when "99"
-            return ["confirmed", amount]
+            return ["ended", amount]
           else
             return false
           end
