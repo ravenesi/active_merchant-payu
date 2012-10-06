@@ -130,7 +130,7 @@ module ActiveMerchant
             return ["error", amount, trans.elements['status'].text]
           end
         else
-          return false
+          return ["error", response.root.elements['status'].text, raw_response.body]
         end
       end
 
