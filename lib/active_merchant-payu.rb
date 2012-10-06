@@ -127,7 +127,7 @@ module ActiveMerchant
           when "99"
             return ["ended", amount]
           else
-            return false
+            return ["error", amount, trans.elements['status'].text]
           end
         else
           return false
