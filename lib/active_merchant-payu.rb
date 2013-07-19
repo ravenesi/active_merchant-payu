@@ -7,7 +7,7 @@ require 'uri'
 module ActiveMerchant
   module Billing
     class PayuGateway < Gateway
-      BASE_PAYU_URL = "https://www.payu.cz/paygw/"
+      BASE_PAYU_URL = "https://secure.payu.com/paygw/"
 
       self.homepage_url = 'http://www.payu.cz/'
       self.display_name = 'PayU'
