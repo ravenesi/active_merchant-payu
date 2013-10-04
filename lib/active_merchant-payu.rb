@@ -55,28 +55,45 @@ module ActiveMerchant
 
       def generate_link(amount, params_array=[], firstname = "", lastname = "", email = "", ip = "", chanel = nil, desc = nil, order_id = nil, language = nil, street = nil, city = nil, postal_code = nil)
         params_to_s = params_array.join('-')
+
+        session_id = SecureRandom.hex(16) + params_to_s + "-" + Digest::MD5.hexdigest(params_to_s + @options[:key1]).to_s
+
         link = "#{BASE_PAYU_URL}UTF/NewPayment?"
-        {
+        params = {
+          :pos_id => @options[:pos_id],
+          :pay_type => chanel,
+          :pos_auth_key => @options[:pos_auth_key],
+          :session_id => session_id,
+          :amount => (amount*100).to_i.to_s,
+          :desc => desc || @options[:default_desc],
           :first_name => firstname,
           :last_name => lastname,
           :email => email,
-          :pos_id => @options[:pos_id],
-          :pos_auth_key => @options[:pos_auth_key],
-          :amount => (amount*100).to_i,
-          :session_id => params_to_s + "-" + Digest::MD5.hexdigest(params_to_s + @options[:key1]).to_s,
-          :client_ip => ip,          
-          :js => 1,
+          :client_ip => ip,
+          :ts => (Time.now.to_f * 1000).to_i.to_s,
+          :key1 => 'dfe1a5a093e8eb8ceee08688127c71aa',
           :street => street,
           :city => city,
           :post_code => postal_code,
           :order_id => order_id,
-          :language => language || :cs,
-          :desc => desc || @options[:default_desc]
-        }.each do |k,v|
+          :language => language || :cs
+        }
+        
+               
+        sig = make_sig(params)
+        params[:sig] = sig
+
+        params.each do |k,v|
           link << "#{k}=#{v}&"
         end
-        link << "#{:pay_type}=#{chanel}&" if chanel
         URI.encode(link)
+      end
+
+      def make_sig(params)        
+         sig = Digest::MD5.hexdigest(params[:pos_id] + params[:pay_type] + params[:session_id] + params[:pos_auth_key] + params[:amount] + params[:desc] + params[:order_id] +
+            params[:first_name] + params[:last_name] + params[:street] + params[:city] + params[:post_code] + params[:email] + params[:language] + params[:client_ip] + params[:ts] + params[:key1])
+         
+         return sig 
       end
 
       def confirm_by_session_id(session_id)
