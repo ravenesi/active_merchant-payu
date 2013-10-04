@@ -1,4 +1,4 @@
-# PayU gateway for active_merchant
+# t PayU gateway for active_merchant
 PayU also known as platnosci.pl
 
 ### Installation
